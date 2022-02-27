@@ -3,11 +3,16 @@
 const express = require("express");
 const data = require("./MovieData/data.json");
 const axios = require("axios");
+const pg = require("pg");
+
 require("dotenv").config();
+
 
 const app = express();
 const APIKEY = process.env.APIKEY;
 const PORT = process.env.PORT;
+const DATABASE_URL = process.env.DATABASE_URL;
+const client = new pg.Client(DATABASE_URL);
 
 
 function MovieData(id, title, release_date, poster_path, overview,){
@@ -99,12 +104,36 @@ function latestHandler(req,res){
         errorHandler(error, req, res);
     })
 }
+app.get("/getMovies", getMoviesHandler);
+function addMovieHandler(req, res) {
+    const movie = req.body;
+    const sql = `INSERT INTO TheMovieTable(title, release_date, poster_path, overview,comment) VALUES($1, $2, $3, $4, $5) RETURNING *;`;
+    const values = [movie.title, movie.release_date,movie.poster_path,movie.overview,movie.comment];
+  
+    client.query(sql, values).then((result) => {
+        return res.status(201).json(result.rows);
+    }).catch((error) => {
+        errorHandler(error, req, res);
+    });
+}  
+app.post("/addMovie", addMovieHandler);
+function getMoviesHandler(req, res) {
+        const sql =` SELECT * FROM TheMovieTable;`;
+        
+        client.query(sql).then((result) => {
+        return res.status(200).json(result.rows);
+        }).catch((error) => {
+        errorHandler(error, req, res);
+    });
+}
 
 app.use("*", notFoundHandler);
 function notFoundHandler(req, res){
     return res.status(404).send("Page Not Found");
 }
 
-app.listen(PORT, () => {
-    console.log(`Example app listening on port ${PORT}`);
+client.connect().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Example app listening on port ${PORT}`);
+    });
 });
