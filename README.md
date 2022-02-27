@@ -1,10 +1,10 @@
-# Project Name - Project Version 1.0
+# Project Name - Project Version 2.0
 
 **Author Name**: AbdAlhameed
 
 ## WRRC
 
- ![image](assest/WRRC.png)
+ ![image](assest/WRRC2.png)
 ## Overview
 
 ## Getting Started
@@ -18,3 +18,8 @@
 ## Project Features
   1) Movie Details
   2) Favorite page
+  3) trending Page
+  4) search Page
+  5) popular Page
+  6) latest Page
+  7) not found Page
